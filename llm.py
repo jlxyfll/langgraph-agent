@@ -4,8 +4,9 @@ from openai import OpenAI
 
 load_dotenv()
 
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "gpt-5.4")
 
-def get_llm(model: str = "z-ai/glm-5.1") -> OpenAI:
+def get_llm(model: str = DEFAULT_MODEL) -> OpenAI:
     return OpenAI(
         base_url=os.environ["OPENAI_API_URL"],
         api_key=os.environ["OPENAI_API_KEY"],
