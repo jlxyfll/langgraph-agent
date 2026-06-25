@@ -13,10 +13,27 @@ class State(TypedDict):
 
 llm = get_llm()
 
-
+llm_with_tools = llm.bind_tools([multiply_tool])
 def chatbot(state: State) -> dict:
-    reply = llm.bind_tools([multiply_tool]).invoke(state["messages"])
+    reply = llm_with_tools.invoke(state["messages"])
     return {"messages": [reply]}
+
+
+# def chatbot(state: State) -> dict:
+#     reply = llm.bind_tools([multiply_tool]).invoke(state["messages"])
+#     return {"messages": [reply]}
+
+
+# intent_map = {"weather": [weather_tool, location_tool], "math": [multiply_tool]}
+#
+# def chatbot(state):
+#     intent = classify_intent(state["messages"])
+#
+#     tools = intent_map[intent]
+#
+#     reply = llm.bind_tools(tools).invoke(state["messages"])
+#
+#     return {"messages": [reply]}
 
 
 def tool_executor(state: State) -> dict:
