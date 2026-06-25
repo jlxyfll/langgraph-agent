@@ -1,4 +1,3 @@
-
 from typing import Annotated
 from typing_extensions import TypedDict
 from langgraph.graph.message import add_messages
@@ -13,9 +12,6 @@ class State(TypedDict):
 
 
 llm = get_llm()
-
-
-
 
 
 def chatbot(state: State) -> dict:
@@ -53,11 +49,27 @@ graph = builder.compile()
 
 def main():
     messages = [HumanMessage(content="计算 1234 × 5678")]
-    result = graph.invoke({"messages": messages})
-    for m in result["messages"]:
-        role = type(m).__name__
-        content = m.content if m.content else "[tool call]"
-        print(f"{role}: {content}")
+
+    # for msg, metadata in graph.stream({"messages": messages}, stream_mode="messages"):
+    #     node = metadata.get("langgraph_node", "")
+    #     content = msg.content if msg.content else ""
+    #     if content:
+    #         print(f"[{node}] {content}", end="", flush=True)
+
+    for step in graph.stream({"messages": messages}):
+        for node_name, output in step.items():
+            print(f"\n== {node_name} ==")
+            if "messages" in output:
+                for m in output["messages"]:
+                    role = type(m).__name__
+                    content = m.content if m.content else "[tool call]"
+                    print(f"{role}: {content}")
+
+    # result = graph.invoke({"messages": messages})
+    # for m in result["messages"]:
+    #     role = type(m).__name__
+    #     content = m.content if m.content else "[tool call]"
+    #     print(f"{role}: {content}")
 
 
 if __name__ == "__main__":
