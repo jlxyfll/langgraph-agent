@@ -17,13 +17,8 @@ llm = get_llm()
 
 
 def chatbot(state: State) -> dict:
-    messages = state["messages"]
-    reply = llm.chat.completions.create(
-        model=DEFAULT_MODEL,
-        messages=[{"role": "user" if m.type == "human" else m.type, "content": m.content} for m in messages],
-    )
-
-    return {"messages": [AIMessage(content=reply.choices[0].message.content)]}
+    reply = llm.invoke(state["messages"])
+    return {"messages": [reply]}
 
 
 graph_builder = StateGraph(State)
